@@ -34,10 +34,13 @@ module ActiveRecord
           raise ActiveRecord::ActiveRecordError, 'Clickhouse update is not supported'
         end
 
-        def exec_delete(_sql, _name = nil, _binds = [])
-          puts [_sql, _name, _binds]
-          1
-          #raise ActiveRecord::ActiveRecordError, 'Clickhouse delete is not supported'
+        def exec_delete(sql, name = nil, _binds = [])
+          # DELETE available for MergeTree on ALTER TABLE
+          old_delete, where_sql = sql.dup.split('WHERE')
+          table = old_delete.scan(/FROM\s(\S+)/)[0][0]
+          new_sql = "ALTER TABLE #{table} DELETE WHERE #{where_sql.sub("#{table}.", '')}"
+          do_execute(new_sql, name, format: nil)
+          0
         end
 
         def tables(name = nil)
