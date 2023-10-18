@@ -36,6 +36,7 @@ module ActiveRecord
 
         def exec_delete(_sql, _name = nil, _binds = [])
           puts [_sql, _name, _binds]
+          1
           #raise ActiveRecord::ActiveRecordError, 'Clickhouse delete is not supported'
         end
 
